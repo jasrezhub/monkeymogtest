@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Monkey Mog</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#FAF8F3;--clay:#C4784A;--clay-dark:#9E5A30;--clay-light:#F0DDD0;--charcoal:#2C2C2A;--muted:#7A7870;--border:#E4E0D8;--white:#FFFFFF;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--charcoal);}
+a{text-decoration:none;color:inherit;}
+.login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem;}
+.login-card{background:var(--white);border-radius:24px;padding:3rem;border:1px solid var(--border);width:100%;max-width:400px;text-align:center;}
+.login-logo{font-family:'Playfair Display',serif;font-size:1.8rem;margin-bottom:0.3rem;}
+.login-logo span{color:var(--clay);}
+.login-sub{color:var(--muted);font-size:0.85rem;margin-bottom:2rem;}
+.login-card input{width:100%;padding:0.8rem 1rem;border:1px solid var(--border);border-radius:10px;font-size:1rem;font-family:'DM Sans',sans-serif;outline:none;margin-bottom:1rem;transition:border 0.2s;}
+.login-card input:focus{border-color:var(--clay);}
+.login-btn{width:100%;background:var(--clay);color:white;padding:0.85rem;border:none;border-radius:999px;font-size:1rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.login-btn:hover{background:var(--clay-dark);}
+.login-err{color:#c0392b;font-size:0.85rem;margin-top:0.8rem;display:none;}
+.admin-wrap{display:none;}
+.admin-nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:var(--charcoal);color:var(--cream);}
+.admin-nav-logo{font-family:'Playfair Display',serif;font-size:1.3rem;}
+.admin-nav-logo span{color:var(--clay);}
+.admin-nav-right{display:flex;gap:1rem;align-items:center;}
+.admin-nav a{color:#aaa;font-size:0.85rem;}
+.admin-nav a:hover{color:var(--cream);}
+.logout-btn{background:none;border:1px solid #555;color:#aaa;padding:0.3rem 0.9rem;border-radius:999px;font-size:0.8rem;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.logout-btn:hover{border-color:var(--clay);color:var(--clay);}
+.admin-body{padding:2.5rem;max-width:1100px;margin:0 auto;}
+.admin-tabs{display:flex;gap:0.5rem;margin-bottom:2rem;}
+.tab-btn{padding:0.5rem 1.3rem;border-radius:999px;border:1px solid var(--border);background:var(--white);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.9rem;transition:all 0.2s;}
+.tab-btn.active{background:var(--clay);color:white;border-color:var(--clay);}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
+.section-header h2{font-family:'Playfair Display',serif;font-size:1.6rem;}
+.add-btn{background:var(--clay);color:white;padding:0.6rem 1.3rem;border:none;border-radius:999px;font-size:0.85rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.add-btn:hover{background:var(--clay-dark);}
+.product-table{width:100%;border-collapse:collapse;background:var(--white);border-radius:16px;overflow:hidden;border:1px solid var(--border);}
+.product-table th{background:var(--cream);padding:0.9rem 1rem;text-align:left;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);font-weight:500;}
+.product-table td{padding:0.9rem 1rem;border-top:1px solid var(--border);vertical-align:middle;font-size:0.9rem;}
+.product-table tr:hover td{background:#FDFBF8;}
+.emoji-cell{font-size:1.8rem;width:55px;}
+.stock-badge{display:inline-block;padding:0.2rem 0.7rem;border-radius:999px;font-size:0.78rem;font-weight:500;}
+.stock-ok{background:#e8f5ee;color:#2e7d52;}
+.stock-low{background:#FFF0E6;color:#C4784A;}
+.stock-out{background:#fde8e8;color:#c0392b;}
+.action-btns{display:flex;gap:0.5rem;}
+.edit-btn{background:none;border:1px solid var(--border);padding:0.3rem 0.8rem;border-radius:999px;font-size:0.8rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+.edit-btn:hover{border-color:var(--clay);color:var(--clay);}
+.del-btn{background:none;border:1px solid var(--border);padding:0.3rem 0.8rem;border-radius:999px;font-size:0.8rem;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--muted);transition:all 0.2s;}
+.del-btn:hover{border-color:#c0392b;color:#c0392b;}
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--white);border-radius:20px;padding:2rem;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;}
+.modal h3{font-family:'Playfair Display',serif;font-size:1.4rem;margin-bottom:1.3rem;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.form-group{display:flex;flex-direction:column;gap:0.4rem;margin-bottom:1rem;}
+.form-group label{font-size:0.8rem;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;}
+.form-group input,.form-group select,.form-group textarea{padding:0.7rem 1rem;border:1px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.95rem;outline:none;transition:border 0.2s;}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--clay);}
+.form-group textarea{resize:vertical;min-height:80px;}
+.modal-actions{display:flex;gap:0.8rem;margin-top:1.2rem;}
+.save-btn{flex:1;background:var(--clay);color:white;padding:0.8rem;border:none;border-radius:999px;font-size:0.95rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.save-btn:hover{background:var(--clay-dark);}
+.cancel-btn{padding:0.8rem 1.5rem;border:1px solid var(--border);border-radius:999px;background:none;font-family:'DM Sans',sans-serif;font-size:0.95rem;cursor:pointer;}
+.cancel-btn:hover{border-color:var(--charcoal);}
+/* Orders */
+.order-card{background:var(--white);border-radius:16px;padding:1.5rem;border:1px solid var(--border);margin-bottom:1rem;}
+.order-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;}
+.order-num{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--clay);}
+.order-date{font-size:0.8rem;color:var(--muted);}
+.order-customer{font-size:0.9rem;color:var(--muted);margin-bottom:0.8rem;line-height:1.6;}
+.order-items{font-size:0.85rem;color:var(--muted);margin-bottom:0.5rem;}
+.order-total{font-weight:500;font-size:1rem;}
+.no-orders{text-align:center;padding:4rem;color:var(--muted);}
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--charcoal);color:white;padding:0.8rem 1.5rem;border-radius:999px;font-size:0.9rem;opacity:0;transform:translateY(20px);transition:all 0.3s;z-index:999;pointer-events:none;}
+.toast.show{opacity:1;transform:translateY(0);}
+@media(max-width:768px){.admin-body{padding:1.5rem;}.product-table{font-size:0.8rem;}.form-row{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="login-screen" id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">Monkey <span>Mog</span></div>
+    <p class="login-sub">Admin Panel — Staff Only</p>
+    <input type="password" id="pw-input" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Log In</button>
+    <p class="login-err" id="login-err">Incorrect password. Try again.</p>
+  </div>
+</div>
+
+<div class="admin-wrap" id="admin-wrap">
+  <div class="admin-nav">
+    <div class="admin-nav-logo">Monkey <span>Mog</span> — Admin</div>
+    <div class="admin-nav-right">
+      <a href="index.html" target="_blank">View Site ↗</a>
+      <button class="logout-btn" onclick="logout()">Log Out</button>
+    </div>
+  </div>
+  <div class="admin-body">
+    <div class="admin-tabs">
+      <button class="tab-btn active" onclick="switchTab('products',this)">Products</button>
+      <button class="tab-btn" onclick="switchTab('orders',this)">Orders</button>
+      <button class="tab-btn" onclick="switchTab('settings',this)">Settings</button>
+    </div>
+    <div class="tab-content active" id="tab-products">
+      <div class="section-header">
+        <h2>Products</h2>
+        <button class="add-btn" onclick="openAddModal()">+ Add Product</button>
+      </div>
+      <table class="product-table">
+        <thead>
+          <tr>
+            <th></th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Description</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="product-table-body"></tbody>
+      </table>
+    </div>
+    <div class="tab-content" id="tab-orders">
+      <div class="section-header"><h2>Orders</h2></div>
+      <div id="orders-list"></div>
+    </div>
+
+    <div class="tab-content" id="tab-settings">
+      <div class="section-header"><h2>Settings</h2></div>
+      <div style="background:var(--white);border-radius:20px;padding:2rem;border:1px solid var(--border);max-width:600px;">
+        <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:0.4rem;">Post-Purchase Message</h3>
+        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:1.2rem;line-height:1.6;">This message appears on every customer's order confirmation page, right after their order number and payment instructions. Use it for thank-you notes, shipping timelines, social media handles, etc.</p>
+        <div class="form-group">
+          <label>Your Message</label>
+          <textarea id="custom-msg-input" style="min-height:130px;padding:0.8rem 1rem;border:1px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.95rem;outline:none;resize:vertical;transition:border 0.2s;" placeholder="e.g. Thank you so much for your order! We hand-pack every piece with care and ship within 3 business days. Follow us on Instagram @monkeymog for behind-the-scenes studio content. ❤️"></textarea>
+        </div>
+        <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap;">
+          <button class="save-btn" style="flex:none;padding:0.7rem 1.8rem;" onclick="saveCustomMsg()">Save Message</button>
+          <button class="cancel-btn" onclick="clearCustomMsg()">Clear Message</button>
+          <span id="msg-saved-note" style="font-size:0.85rem;color:#2e7d52;display:none;">✓ Saved!</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3 id="modal-title">Add Product</h3>
+    <div class="form-group"><label>Product Name</label><input type="text" id="m-name" placeholder="Morning Mug"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Category</label>
+        <select id="m-cat">
+          <option>Mugs</option><option>Vases</option><option>Bowls</option><option>Small Pieces</option><option>Other</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Emoji (fallback)</label><input type="text" id="m-emoji" placeholder="☕" maxlength="4"></div>
+    </div>
+    <div class="form-group"><label>Photo Filename</label><input type="text" id="m-image" placeholder="images/morning-mug.jpg"></div>
+    <p style="font-size:0.8rem;color:var(--muted);margin:-0.6rem 0 1rem;line-height:1.5;">Upload your photo to the <code>images/</code> folder in your GitHub repo, then type the filename here (e.g. <code>images/my-mug.jpg</code>). Leave blank to use the emoji instead.</p>
+    <div class="form-row">
+      <div class="form-group"><label>Price ($)</label><input type="number" id="m-price" placeholder="55" min="1" step="0.01"></div>
+      <div class="form-group"><label>Stock Quantity</label><input type="number" id="m-stock" placeholder="10" min="0" step="1"></div>
+    </div>
+    <div class="form-group"><label>Description</label><textarea id="m-desc" placeholder="A short description of this piece..."></textarea></div>
+    <div class="modal-actions">
+      <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+      <button class="save-btn" onclick="saveProduct()">Save Product</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="shared.js"></script>
+<script>
+const ADMIN_PASSWORD = 'monkeymog2025'; // ← Change this to your own password!
+
+function doLogin() {
+  if (document.getElementById('pw-input').value === ADMIN_PASSWORD) {
+    sessionStorage.setItem('mm_admin', '1');
+    showAdmin();
+  } else {
+    document.getElementById('login-err').style.display = 'block';
+    document.getElementById('pw-input').value = '';
+  }
+}
+function logout() {
+  sessionStorage.removeItem('mm_admin');
+  document.getElementById('admin-wrap').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('pw-input').value = '';
+}
+function showAdmin() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('admin-wrap').style.display = 'block';
+  renderProductTable();
+  renderOrders();
+}
+if (sessionStorage.getItem('mm_admin') === '1') showAdmin();
+
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+  if (name === 'settings') {
+    const saved = localStorage.getItem('mm_custom_msg') || '';
+    document.getElementById('custom-msg-input').value = saved;
+  }
+}
+
+function saveCustomMsg() {
+  const msg = document.getElementById('custom-msg-input').value.trim();
+  localStorage.setItem('mm_custom_msg', msg);
+  const note = document.getElementById('msg-saved-note');
+  note.style.display = 'inline';
+  setTimeout(() => note.style.display = 'none', 2500);
+}
+
+function clearCustomMsg() {
+  localStorage.removeItem('mm_custom_msg');
+  document.getElementById('custom-msg-input').value = '';
+  showToast('Message cleared.');
+}
+
+function renderProductTable() {
+  const products = getProducts();
+  document.getElementById('product-table-body').innerHTML = products.map(p => {
+    const stockClass = p.stock <= 0 ? 'stock-out' : p.stock <= 3 ? 'stock-low' : 'stock-ok';
+    const stockLabel = p.stock <= 0 ? 'Out of stock' : p.stock <= 3 ? `Low — ${p.stock} left` : `${p.stock} in stock`;
+    return `<tr>
+      <td class="emoji-cell">${p.emoji}</td>
+      <td><strong>${p.name}</strong></td>
+      <td>${p.category}</td>
+      <td>$${Number(p.price).toFixed(2)}</td>
+      <td><span class="stock-badge ${stockClass}">${stockLabel}</span></td>
+      <td style="color:var(--muted);max-width:200px;font-size:0.85rem;">${p.desc}</td>
+      <td><div class="action-btns">
+        <button class="edit-btn" onclick="openEditModal(${p.id})">Edit</button>
+        <button class="del-btn" onclick="deleteProduct(${p.id})">Delete</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+let editingId = null;
+function openAddModal() {
+  editingId = null;
+  document.getElementById('modal-title').textContent = 'Add Product';
+  ['m-name','m-price','m-emoji','m-desc','m-stock','m-image'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('m-cat').value = 'Mugs';
+  document.getElementById('modal').classList.add('open');
+}
+function openEditModal(id) {
+  const p = getProducts().find(x => x.id === id);
+  if (!p) return;
+  editingId = id;
+  document.getElementById('modal-title').textContent = 'Edit Product';
+  document.getElementById('m-name').value = p.name;
+  document.getElementById('m-cat').value = p.category;
+  document.getElementById('m-price').value = p.price;
+  document.getElementById('m-emoji').value = p.emoji;
+  document.getElementById('m-image').value = p.image || '';
+  document.getElementById('m-desc').value = p.desc;
+  document.getElementById('m-stock').value = p.stock;
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+
+function saveProduct() {
+  const name = document.getElementById('m-name').value.trim();
+  const category = document.getElementById('m-cat').value;
+  const price = parseFloat(document.getElementById('m-price').value);
+  const emoji = document.getElementById('m-emoji').value.trim() || '🏺';
+  const image = document.getElementById('m-image').value.trim();
+  const desc = document.getElementById('m-desc').value.trim();
+  const stock = parseInt(document.getElementById('m-stock').value) || 0;
+  if (!name || !price || !desc) { alert('Please fill in name, price, and description.'); return; }
+  const products = getProducts();
+  if (editingId) {
+    const idx = products.findIndex(p => p.id === editingId);
+    products[idx] = { ...products[idx], name, category, price, emoji, image, desc, stock };
+    showToast('Product updated!');
+  } else {
+    products.push({ id: Date.now(), name, category, price, emoji, image, desc, stock });
+    showToast('Product added!');
+  }
+  saveProducts(products);
+  renderProductTable();
+  closeModal();
+}
+
+function deleteProduct(id) {
+  if (!confirm('Delete this product? This cannot be undone.')) return;
+  saveProducts(getProducts().filter(p => p.id !== id));
+  renderProductTable();
+  showToast('Product deleted.');
+}
+
+function renderOrders() {
+  const orders = JSON.parse(localStorage.getItem('mm_orders') || '[]');
+  const container = document.getElementById('orders-list');
+  if (!orders.length) {
+    container.innerHTML = '<div class="no-orders">No orders yet. They will appear here once customers place them.</div>'; return;
+  }
+  container.innerHTML = orders.map(o => `
+    <div class="order-card">
+      <div class="order-header">
+        <div><div class="order-num">${o.orderNumber}</div><div class="order-date">${new Date(o.date).toLocaleString()}</div></div>
+        <div class="order-total">$${Number(o.total).toFixed(2)}</div>
+      </div>
+      <div class="order-customer">
+        <strong>${o.customer.name}</strong> — ${o.customer.email}<br>
+        ${o.customer.addr}, ${o.customer.city}, ${o.customer.state} ${o.customer.zip}, ${o.customer.country}
+        ${o.customer.notes ? `<br><em>Note: ${o.customer.notes}</em>` : ''}
+      </div>
+      <div class="order-items">${o.items.map(i => `${i.emoji} ${i.name} × ${i.qty} ($${(i.price*i.qty).toFixed(2)})`).join(' &nbsp;|&nbsp; ')}</div>
+    </div>
+  `).join('');
+}
+</script>
+</body>
+</html>

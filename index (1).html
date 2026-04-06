@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monkey Mog — Handmade Pottery</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #FAF8F3; --clay: #C4784A; --clay-dark: #9E5A30;
+  --clay-light: #F0DDD0; --charcoal: #2C2C2A; --muted: #7A7870;
+  --border: #E4E0D8; --white: #FFFFFF;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--charcoal); }
+a { text-decoration: none; color: inherit; }
+
+nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.2rem 3rem; background: var(--white);
+  border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100;
+}
+.nav-logo { font-family: 'Playfair Display', serif; font-size: 1.5rem; }
+.nav-logo span { color: var(--clay); }
+.nav-links { display: flex; gap: 2rem; font-size: 0.9rem; font-weight: 500; color: var(--muted); }
+.nav-links a:hover { color: var(--clay); }
+.cart-btn {
+  background: var(--clay); color: white; padding: 0.5rem 1.3rem;
+  border-radius: 999px; font-size: 0.85rem; font-weight: 500;
+  cursor: pointer; border: none; font-family: 'DM Sans', sans-serif; transition: background 0.2s;
+}
+.cart-btn:hover { background: var(--clay-dark); }
+
+.hero { display: grid; grid-template-columns: 1fr 1fr; min-height: 86vh; }
+.hero-text { display: flex; flex-direction: column; justify-content: center; padding: 5rem 4rem; }
+.hero-tag { font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--clay); margin-bottom: 1.2rem; font-weight: 500; }
+.hero-title { font-family: 'Playfair Display', serif; font-size: 3.8rem; line-height: 1.1; margin-bottom: 1.5rem; }
+.hero-title em { color: var(--clay); font-style: italic; }
+.hero-sub { font-size: 1.05rem; color: var(--muted); line-height: 1.75; max-width: 420px; margin-bottom: 2.5rem; }
+.hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+.btn-primary { background: var(--clay); color: white; padding: 0.85rem 2rem; border-radius: 999px; font-weight: 500; font-size: 0.95rem; transition: background 0.2s; display: inline-block; font-family: 'DM Sans', sans-serif; }
+.btn-primary:hover { background: var(--clay-dark); }
+.btn-outline { border: 1.5px solid var(--charcoal); color: var(--charcoal); padding: 0.85rem 2rem; border-radius: 999px; font-weight: 500; font-size: 0.95rem; transition: all 0.2s; display: inline-block; }
+.btn-outline:hover { background: var(--charcoal); color: white; }
+.hero-visual { background: var(--clay-light); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 1rem; }
+.hero-visual p { color: var(--muted); font-size: 0.85rem; }
+
+section { padding: 5rem 3rem; }
+.section-label { font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--clay); margin-bottom: 0.6rem; font-weight: 500; }
+.section-title { font-family: 'Playfair Display', serif; font-size: 2.2rem; margin-bottom: 0.8rem; }
+.section-sub { color: var(--muted); font-size: 1rem; line-height: 1.75; max-width: 540px; margin-bottom: 3rem; }
+
+.featured { background: var(--white); }
+.featured-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem; }
+.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
+.product-card { background: var(--cream); border-radius: 16px; overflow: hidden; transition: transform 0.2s; cursor: pointer; border: 1px solid var(--border); }
+.product-card:hover { transform: translateY(-5px); }
+.product-img { background: var(--clay-light); height: 230px; display: flex; align-items: center; justify-content: center; font-size: 5rem; }
+.product-info { padding: 1.2rem; }
+.product-name { font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 0.3rem; }
+.product-desc { color: var(--muted); font-size: 0.85rem; margin-bottom: 0.9rem; line-height: 1.5; }
+.product-footer { display: flex; align-items: center; justify-content: space-between; }
+.product-price { font-weight: 500; font-size: 1rem; color: var(--clay); }
+.add-to-cart-btn { background: var(--charcoal); color: white; border: none; padding: 0.4rem 1rem; border-radius: 999px; font-size: 0.8rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s; }
+.add-to-cart-btn:hover { background: var(--clay); }
+
+.about { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+.about-visual { background: var(--clay-light); border-radius: 24px; height: 400px; display: flex; align-items: center; justify-content: center; font-size: 6rem; }
+
+.reviews-section { background: var(--white); }
+.reviews-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+.review-card { background: var(--cream); border-radius: 16px; padding: 1.5rem; border: 1px solid var(--border); }
+.review-stars { color: var(--clay); font-size: 1rem; margin-bottom: 0.8rem; }
+.review-text { font-size: 0.95rem; line-height: 1.7; margin-bottom: 1rem; }
+.review-author { font-size: 0.85rem; color: var(--muted); font-weight: 500; }
+
+.comment-form { margin-top: 3rem; max-width: 600px; }
+.comment-form h3 { font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 1.2rem; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.form-group { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
+.form-group label { font-size: 0.85rem; font-weight: 500; color: var(--muted); }
+.form-group input, .form-group textarea, .form-group select { padding: 0.7rem 1rem; border: 1px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; background: var(--white); color: var(--charcoal); outline: none; transition: border 0.2s; }
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--clay); }
+.form-group textarea { resize: vertical; min-height: 110px; }
+.submit-btn { background: var(--clay); color: white; padding: 0.8rem 2rem; border: none; border-radius: 999px; font-size: 0.95rem; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s; }
+.submit-btn:hover { background: var(--clay-dark); }
+
+footer { background: var(--charcoal); color: var(--cream); padding: 3rem; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 3rem; }
+.footer-brand { font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 0.8rem; }
+.footer-brand span { color: var(--clay); }
+.footer-desc { font-size: 0.9rem; color: #9A9890; line-height: 1.7; }
+.footer-col h4 { font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase; color: #9A9890; margin-bottom: 1rem; }
+.footer-col a { display: block; font-size: 0.9rem; color: var(--cream); margin-bottom: 0.5rem; opacity: 0.8; }
+.footer-col a:hover { opacity: 1; color: var(--clay); }
+.footer-bottom { background: #222220; color: #666; font-size: 0.8rem; text-align: center; padding: 1rem; }
+
+.toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--charcoal); color: white; padding: 0.8rem 1.5rem; border-radius: 999px; font-size: 0.9rem; opacity: 0; transform: translateY(20px); transition: all 0.3s; z-index: 999; pointer-events: none; }
+.toast.show { opacity: 1; transform: translateY(0); }
+
+@media (max-width: 768px) {
+  nav { padding: 1rem 1.5rem; }
+  .nav-links { display: none; }
+  .hero { grid-template-columns: 1fr; }
+  .hero-visual { min-height: 280px; }
+  .hero-text { padding: 3rem 1.5rem; }
+  .hero-title { font-size: 2.5rem; }
+  section { padding: 3rem 1.5rem; }
+  .about { grid-template-columns: 1fr; }
+  footer { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Monkey <span>Mog</span></div>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="shop.html">Shop</a>
+    <a href="#about">About</a>
+    <a href="#reviews">Reviews</a>
+  </div>
+  <button class="cart-btn" onclick="window.location='cart.html'">Cart (<span id="cart-count">0</span>)</button>
+</nav>
+
+<div class="hero">
+  <div class="hero-text">
+    <div class="hero-tag">Handcrafted with love</div>
+    <h1 class="hero-title">Pottery that<br>tells a <em>story</em></h1>
+    <p class="hero-sub">Each piece at Monkey Mog is hand-thrown, one of a kind, and made to be lived with. From mugs to vases — built to last, beautiful to hold.</p>
+    <div class="hero-actions">
+      <a href="shop.html" class="btn-primary">Shop Now</a>
+      <a href="#about" class="btn-outline">Our Story</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div style="font-size:8rem;">🏺</div>
+    <p>Your product photos will go here</p>
+  </div>
+</div>
+
+<section class="featured">
+  <div class="featured-header">
+    <div>
+      <div class="section-label">Our Collection</div>
+      <h2 class="section-title">Featured Pieces</h2>
+    </div>
+    <a href="shop.html" class="btn-outline" style="font-size:0.85rem;padding:0.6rem 1.4rem;">View All</a>
+  </div>
+  <div class="product-grid" id="featured-grid"></div>
+</section>
+
+<section id="about">
+  <div class="about">
+    <div class="about-visual">🤲</div>
+    <div class="about-text">
+      <div class="section-label">Our Story</div>
+      <h2 class="section-title">Made by hand,<br>made with heart</h2>
+      <p class="section-sub">Monkey Mog started as a passion project and grew into something bigger. Every piece is thrown on the wheel, glazed by hand, and fired in our studio kiln. No two pieces are exactly alike — that's the point.</p>
+      <p style="color:var(--muted);font-size:0.95rem;line-height:1.75;">We believe in slow making, quality materials, and pottery you'll reach for every single day.</p>
+    </div>
+  </div>
+</section>
+
+<section class="reviews-section" id="reviews">
+  <div class="section-label">What People Say</div>
+  <h2 class="section-title">Customer Reviews</h2>
+  <p class="section-sub">Real feedback from real customers who love their pieces.</p>
+  <div class="reviews-grid" id="reviews-grid"></div>
+  <div class="comment-form">
+    <h3>Leave a Review</h3>
+    <div class="form-row">
+      <div class="form-group"><label>Your Name</label><input type="text" id="review-name" placeholder="Jane Doe"></div>
+      <div class="form-group">
+        <label>Rating</label>
+        <select id="review-rating">
+          <option value="5">⭐⭐⭐⭐⭐ — Excellent</option>
+          <option value="4">⭐⭐⭐⭐ — Great</option>
+          <option value="3">⭐⭐⭐ — Good</option>
+          <option value="2">⭐⭐ — Fair</option>
+          <option value="1">⭐ — Poor</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label>Your Review</label><textarea id="review-text" placeholder="Tell us about your piece..."></textarea></div>
+    <button class="submit-btn" onclick="submitReview()">Submit Review</button>
+  </div>
+</section>
+
+<footer>
+  <div>
+    <div class="footer-brand">Monkey <span>Mog</span></div>
+    <p class="footer-desc">Handmade pottery crafted with care. Each piece is unique, built to be used, and made to last.</p>
+  </div>
+  <div class="footer-col">
+    <h4>Shop</h4>
+    <a href="shop.html">All Products</a>
+    <a href="cart.html">Cart</a>
+    <a href="checkout.html">Checkout</a>
+  </div>
+  <div class="footer-col">
+    <h4>Info</h4>
+    <a href="#about">About Us</a>
+    <a href="#reviews">Reviews</a>
+    <a href="admin.html">Admin</a>
+  </div>
+</footer>
+<div class="footer-bottom">© 2025 Monkey Mog. All rights reserved.</div>
+<div class="toast" id="toast"></div>
+
+<script src="shared.js"></script>
+<script>
+updateCartCount();
+renderFeatured('featured-grid', 4);
+renderReviews();
+
+function submitReview() {
+  const name = document.getElementById('review-name').value.trim();
+  const rating = parseInt(document.getElementById('review-rating').value);
+  const text = document.getElementById('review-text').value.trim();
+  if (!name || !text) { alert('Please fill in your name and review.'); return; }
+  const reviews = getReviews();
+  reviews.unshift({ name, rating, text });
+  localStorage.setItem('mm_reviews', JSON.stringify(reviews));
+  renderReviews();
+  document.getElementById('review-name').value = '';
+  document.getElementById('review-text').value = '';
+  showToast('Review submitted — thank you!');
+}
+</script>
+</body>
+</html>
