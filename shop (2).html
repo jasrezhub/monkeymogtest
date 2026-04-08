@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop — Monkey Mog</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#FAF8F3;--clay:#C4784A;--clay-dark:#9E5A30;--clay-light:#F0DDD0;--charcoal:#2C2C2A;--muted:#7A7870;--border:#E4E0D8;--white:#FFFFFF;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--charcoal);}
+a{text-decoration:none;color:inherit;}
+nav{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 3rem;background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
+.nav-logo{font-family:'Playfair Display',serif;font-size:1.5rem;}
+.nav-logo span{color:var(--clay);}
+.nav-links{display:flex;gap:2rem;font-size:0.9rem;font-weight:500;color:var(--muted);}
+.nav-links a:hover{color:var(--clay);}
+.cart-btn{background:var(--clay);color:white;padding:0.5rem 1.3rem;border-radius:999px;font-size:0.85rem;font-weight:500;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:background 0.2s;}
+.cart-btn:hover{background:var(--clay-dark);}
+.shop-header{padding:4rem 3rem 1rem;}
+.shop-header h1{font-family:'Playfair Display',serif;font-size:2.8rem;margin-bottom:0.5rem;}
+.shop-header p{color:var(--muted);font-size:1rem;}
+.shop-controls{padding:1.5rem 3rem;display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;}
+.filter-btn{padding:0.45rem 1.1rem;border-radius:999px;border:1px solid var(--border);background:var(--white);font-family:'DM Sans',sans-serif;font-size:0.85rem;cursor:pointer;transition:all 0.2s;color:var(--charcoal);}
+.filter-btn.active,.filter-btn:hover{background:var(--clay);color:white;border-color:var(--clay);}
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5rem;padding:0.5rem 3rem 5rem;}
+.product-card{background:var(--white);border-radius:16px;overflow:hidden;transition:transform 0.2s;cursor:pointer;border:1px solid var(--border);}
+.product-card:hover{transform:translateY(-5px);}
+.product-card.out-of-stock{opacity:0.6;cursor:default;}
+.product-card.out-of-stock:hover{transform:none;}
+.product-img{background:var(--clay-light);height:230px;display:flex;align-items:center;justify-content:center;font-size:5rem;position:relative;overflow:hidden;}
+.oos-badge{position:absolute;top:12px;left:12px;background:#2C2C2A;color:white;font-size:0.75rem;padding:0.3rem 0.8rem;border-radius:999px;font-family:'DM Sans',sans-serif;z-index:1;}
+.low-badge{position:absolute;top:12px;left:12px;background:var(--clay);color:white;font-size:0.75rem;padding:0.3rem 0.8rem;border-radius:999px;font-family:'DM Sans',sans-serif;z-index:1;}
+.product-info{padding:1.2rem;}
+.product-cat{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--clay);margin-bottom:0.3rem;}
+.product-name{font-family:'Playfair Display',serif;font-size:1.1rem;margin-bottom:0.3rem;}
+.product-desc{color:var(--muted);font-size:0.85rem;margin-bottom:0.9rem;line-height:1.5;}
+.product-footer{display:flex;align-items:center;justify-content:space-between;}
+.product-price{font-weight:500;font-size:1rem;color:var(--clay);}
+.add-to-cart-btn{background:var(--charcoal);color:white;border:none;padding:0.4rem 1rem;border-radius:999px;font-size:0.8rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.2s;}
+.add-to-cart-btn:hover{background:var(--clay);}
+.stock-count{font-size:0.75rem;color:var(--muted);margin-top:0.4rem;}
+.empty{text-align:center;padding:5rem;color:var(--muted);}
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--charcoal);color:white;padding:0.8rem 1.5rem;border-radius:999px;font-size:0.9rem;opacity:0;transform:translateY(20px);transition:all 0.3s;z-index:999;pointer-events:none;}
+.toast.show{opacity:1;transform:translateY(0);}
+@media(max-width:768px){nav{padding:1rem 1.5rem;}.nav-links{display:none;}.shop-header,.shop-controls{padding-left:1.5rem;padding-right:1.5rem;}.product-grid{padding:0.5rem 1.5rem 3rem;}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-logo">Monkey <span>Mog</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="shop.html">Shop</a>
+    <a href="index.html#about">About</a>
+    <a href="index.html#reviews">Reviews</a>
+  </div>
+  <button class="cart-btn" onclick="window.location='cart.html'">Cart (<span id="cart-count">0</span>)</button>
+</nav>
+
+<div class="shop-header">
+  <h1>The Collection</h1>
+  <p>Every piece is hand-thrown and one of a kind. Browse the full range below.</p>
+</div>
+
+<div class="shop-controls">
+  <button class="filter-btn active" onclick="filterProducts('All', this)">All</button>
+  <button class="filter-btn" onclick="filterProducts('Mugs', this)">Mugs</button>
+  <button class="filter-btn" onclick="filterProducts('Vases', this)">Vases</button>
+  <button class="filter-btn" onclick="filterProducts('Bowls', this)">Bowls</button>
+  <button class="filter-btn" onclick="filterProducts('Small Pieces', this)">Small Pieces</button>
+</div>
+
+<div class="product-grid" id="shop-grid"></div>
+<div class="toast" id="toast"></div>
+
+<script src="shared.js"></script>
+<script>
+let currentFilter = 'All';
+updateCartCount();
+
+function filterProducts(cat, btn) {
+  currentFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderShop();
+}
+
+function renderShop() {
+  const products = getProducts();
+  const filtered = currentFilter === 'All' ? products : products.filter(p => p.category === currentFilter);
+  const grid = document.getElementById('shop-grid');
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="empty">No products in this category yet.</div>';
+    return;
+  }
+  grid.innerHTML = filtered.map(p => {
+    const oos = p.stock <= 0;
+    const low = p.stock > 0 && p.stock <= 3;
+    const safeName = p.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    const safeImage = (p.image || '').replace(/'/g, "\\'");
+    return `
+    <div class="product-card${oos ? ' out-of-stock' : ''}" onclick="${oos ? '' : "window.location='product.html?id=" + p.id + "'"}">
+      <div class="product-img">
+        ${productThumb(p, '230px')}
+        ${oos ? '<div class="oos-badge">Out of Stock</div>' : ''}
+        ${low ? '<div class="low-badge">Only ' + p.stock + ' left!</div>' : ''}
+      </div>
+      <div class="product-info">
+        <div class="product-cat">${p.category}</div>
+        <div class="product-name">${p.name}</div>
+        <div class="product-desc">${p.desc}</div>
+        <div class="product-footer">
+          <div>
+            <div class="product-price">$${Number(p.price).toFixed(2)}</div>
+            <div class="stock-count">${oos ? 'Out of stock' : p.stock + ' in stock'}</div>
+          </div>
+          ${oos
+            ? '<span style="font-size:0.8rem;color:#999;">Unavailable</span>'
+            : '<button class="add-to-cart-btn" onclick="event.stopPropagation();addToCart({id:' + p.id + ',name:\'' + safeName + '\',price:' + p.price + ',emoji:\'' + p.emoji + '\',image:\'' + safeImage + '\'})">Add to Cart</button>'
+          }
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+renderShop();
+</script>
+</body>
+</html>
