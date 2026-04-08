@@ -200,39 +200,64 @@ function placeOrder() {
   orders.unshift(order);
   localStorage.setItem('mm_orders', JSON.stringify(orders));
 
-  // ── SEND TO FORMSPREE ──
-  fetch('https://formspree.io/f/xaqlkrer', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      order_number: orderNum,
-      date: new Date().toLocaleString(),
-      customer_name: name,
-      customer_email: email,
-      customer_phone: document.getElementById('f-phone').value || 'Not provided',
-      shipping_address: `${addr}, ${city}, ${state} ${zip}, ${document.getElementById('f-country').value}`,
-      order_notes: document.getElementById('f-notes').value || 'None',
-      items: cart.map(i => `${i.name} x${i.qty} @ $${i.price} = $${(i.price * i.qty).toFixed(2)}`).join(' | '),
-      order_total: `$${subtotal.toFixed(2)}`
-    })
-  }).catch(err => console.log('Formspree error:', err));
+  // ── SEND ORDER NOTIFICATION + CUSTOMER EMAIL ──
+fetch('https://api.web3forms.com/submit', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    access_key: '9896efd3-e7f4-4166-9da7-add594ca4d3f',
+    subject: `New Order ${orderNum} — Monkey Mog`,
+    from_name: 'Monkey Mog Orders',
+    replyto: email,
 
-  saveCart([]);
+    // ── YOUR notification email (goes to you) ──
+    order_number: orderNum,
+    date: new Date().toLocaleString(),
+    customer_name: name,
+    customer_email: email,
+    customer_phone: document.getElementById('f-phone').value || 'Not provided',
+    shipping_address: `${addr}, ${city}, ${state} ${zip}, ${document.getElementById('f-country').value}`,
+    order_notes: document.getElementById('f-notes').value || 'None',
+    items: cart.map(i => `${i.name} x${i.qty} @ $${i.price} = $${(i.price * i.qty).toFixed(2)}`).join(' | '),
+    order_total: `$${subtotal.toFixed(2)}`
+  })
+}).catch(err => console.log('Web3Forms error:', err));
 
-  document.getElementById('confirm-order-num').textContent = orderNum;
-  document.getElementById('confirm-order-num-2').textContent = orderNum;
-  document.getElementById('confirm-total').textContent = `$${subtotal.toFixed(2)}`;
+// ── CUSTOMER confirmation email ──
+fetch('https://api.web3forms.com/submit', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    access_key: '9896efd3-e7f4-4166-9da7-add594ca4d3f',
+    subject: `Your Monkey Mog Order ${orderNum} is Received!`,
+    from_name: 'Monkey Mog',
+    to_email: email,
+    message: `Hi ${name},
 
-  const msg = localStorage.getItem('mm_custom_msg');
-  if (msg && msg.trim()) {
-    document.getElementById('custom-msg-text').textContent = msg;
-    document.getElementById('custom-msg-box').style.display = 'block';
-  }
+Thank you for your order with Monkey Mog! We've received your order and it's been placed successfully.
 
-  document.getElementById('checkout-page').style.display = 'none';
-  document.getElementById('confirmation-page').style.display = 'block';
-  window.scrollTo(0, 0);
-}
+ORDER DETAILS
+─────────────────────────
+Order Number: ${orderNum}
+Items: ${cart.map(i => `${i.name} x${i.qty} = $${(i.price * i.qty).toFixed(2)}`).join(', ')}
+Total: $${subtotal.toFixed(2)}
+─────────────────────────
+
+NEXT STEPS
+Your order is currently awaiting payment verification. To complete your purchase, please send $${subtotal.toFixed(2)} to one of the methods below with your order number ${orderNum} in the notes:
+
+  • Venmo:   @monkeymog
+  • Zelle:   monkeymog@email.com
+  • CashApp: $monkeymog
+
+Once we confirm your payment, you will receive a second confirmation email and we will begin preparing your order for shipment. Orders typically ship within 1–3 business days after payment is verified.
+
+Questions? Reply to this email and we'll get back to you.
+
+Thank you for supporting Monkey Mog!
+— The Monkey Mog Team`
+  })
+}).catch(err => console.log('Customer email error:', err));
 </script>
 </body>
 </html>
