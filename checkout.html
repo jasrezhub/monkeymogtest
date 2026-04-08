@@ -187,10 +187,8 @@ function placeOrder() {
   const orderNum = generateOrderNumber();
   const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
 
-  // ── DEPLETE STOCK ── This is the key line that reduces stock on purchase
   depleteStock(cart);
 
-  // Save order record
   const order = {
     orderNumber: orderNum,
     date: new Date().toISOString(),
@@ -202,20 +200,35 @@ function placeOrder() {
   orders.unshift(order);
   localStorage.setItem('mm_orders', JSON.stringify(orders));
 
-  // Clear cart
+  // ── SEND TO FORMSPREE ──
+  fetch('https://formspree.io/f/xaqlkrer', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      order_number: orderNum,
+      date: new Date().toLocaleString(),
+      customer_name: name,
+      customer_email: email,
+      customer_phone: document.getElementById('f-phone').value || 'Not provided',
+      shipping_address: `${addr}, ${city}, ${state} ${zip}, ${document.getElementById('f-country').value}`,
+      order_notes: document.getElementById('f-notes').value || 'None',
+      items: cart.map(i => `${i.name} x${i.qty} @ $${i.price} = $${(i.price * i.qty).toFixed(2)}`).join(' | '),
+      order_total: `$${subtotal.toFixed(2)}`
+    })
+  }).catch(err => console.log('Formspree error:', err));
+
   saveCart([]);
 
-  // Show confirmation
-  // Show custom message if set
+  document.getElementById('confirm-order-num').textContent = orderNum;
+  document.getElementById('confirm-order-num-2').textContent = orderNum;
+  document.getElementById('confirm-total').textContent = `$${subtotal.toFixed(2)}`;
+
   const msg = localStorage.getItem('mm_custom_msg');
   if (msg && msg.trim()) {
     document.getElementById('custom-msg-text').textContent = msg;
     document.getElementById('custom-msg-box').style.display = 'block';
   }
 
-  document.getElementById('confirm-order-num').textContent = orderNum;
-  document.getElementById('confirm-order-num-2').textContent = orderNum;
-  document.getElementById('confirm-total').textContent = `$${subtotal.toFixed(2)}`;
   document.getElementById('checkout-page').style.display = 'none';
   document.getElementById('confirmation-page').style.display = 'block';
   window.scrollTo(0, 0);
