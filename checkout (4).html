@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout — Monkey Mog</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#FAF8F3;--clay:#C4784A;--clay-dark:#9E5A30;--clay-light:#F0DDD0;--charcoal:#2C2C2A;--muted:#7A7870;--border:#E4E0D8;--white:#FFFFFF;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--charcoal);}
+a{text-decoration:none;color:inherit;}
+nav{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 3rem;background:var(--white);border-bottom:1px solid var(--border);}
+.nav-logo{font-family:'Playfair Display',serif;font-size:1.5rem;}
+.nav-logo span{color:var(--clay);}
+.page{display:grid;grid-template-columns:1fr 380px;gap:3rem;padding:3rem;max-width:1100px;margin:0 auto;}
+h1{font-family:'Playfair Display',serif;font-size:2.2rem;margin-bottom:0.4rem;}
+.subtitle{color:var(--muted);font-size:0.95rem;margin-bottom:2rem;}
+.card{background:var(--white);border-radius:20px;padding:2rem;border:1px solid var(--border);margin-bottom:1.5rem;}
+.card h2{font-family:'Playfair Display',serif;font-size:1.3rem;margin-bottom:1.3rem;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.form-group{display:flex;flex-direction:column;gap:0.4rem;margin-bottom:1rem;}
+.form-group label{font-size:0.82rem;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;}
+.form-group input,.form-group select{padding:0.75rem 1rem;border:1px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.95rem;background:var(--cream);color:var(--charcoal);outline:none;transition:border 0.2s;}
+.form-group input:focus,.form-group select:focus{border-color:var(--clay);background:var(--white);}
+.order-summary{background:var(--white);border-radius:20px;padding:2rem;border:1px solid var(--border);position:sticky;top:2rem;height:fit-content;}
+.order-summary h2{font-family:'Playfair Display',serif;font-size:1.3rem;margin-bottom:1.3rem;}
+.summary-item{display:flex;align-items:center;gap:1rem;padding:0.6rem 0;border-bottom:1px solid var(--border);}
+.s-emoji{width:44px;height:44px;background:var(--clay-light);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;overflow:hidden;}
+.s-name{flex:1;font-size:0.9rem;}
+.s-qty{font-size:0.8rem;color:var(--muted);}
+.s-price{font-size:0.9rem;font-weight:500;}
+.divider{border:none;border-top:1px solid var(--border);margin:1rem 0;}
+.summary-row{display:flex;justify-content:space-between;font-size:0.95rem;padding:0.3rem 0;}
+.summary-row.total{font-weight:500;font-size:1.1rem;padding-top:0.6rem;}
+.place-btn{width:100%;background:var(--clay);color:white;padding:1rem;border-radius:999px;font-size:1rem;font-weight:500;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:background 0.2s;margin-top:1.2rem;}
+.place-btn:hover{background:var(--clay-dark);}
+.place-btn:disabled{background:var(--muted);cursor:not-allowed;}
+.confirmation{display:none;text-align:center;padding:3rem 2rem;}
+.confirm-icon{font-size:4rem;margin-bottom:1rem;}
+.confirm-title{font-family:'Playfair Display',serif;font-size:2rem;margin-bottom:0.5rem;}
+.confirm-sub{color:var(--muted);margin-bottom:2rem;font-size:0.95rem;line-height:1.7;}
+.order-number-box{background:var(--clay-light);border-radius:16px;padding:1.5rem 2rem;margin:0 auto 2rem;max-width:400px;}
+.order-number-label{font-size:0.8rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--clay);margin-bottom:0.4rem;}
+.order-number{font-family:'Playfair Display',serif;font-size:2rem;font-weight:600;color:var(--charcoal);}
+.payment-box{background:var(--white);border:2px solid var(--clay);border-radius:20px;padding:2rem;max-width:480px;margin:0 auto 2rem;text-align:left;}
+.payment-box h3{font-family:'Playfair Display',serif;font-size:1.3rem;margin-bottom:0.5rem;color:var(--clay);}
+.payment-box p{font-size:0.9rem;color:var(--muted);line-height:1.7;margin-bottom:1.2rem;}
+.payment-methods{display:flex;flex-direction:column;gap:0.8rem;}
+.pay-method{display:flex;align-items:center;gap:1rem;background:var(--cream);border-radius:12px;padding:1rem 1.2rem;}
+.pay-icon{font-size:1.5rem;width:36px;text-align:center;}
+.pay-name{font-weight:500;font-size:0.95rem;}
+.pay-handle{color:var(--clay);font-size:0.85rem;font-family:monospace;}
+.pay-note{margin-top:1.2rem;background:#FFF8F0;border-radius:10px;padding:0.9rem 1.1rem;font-size:0.85rem;color:#9E5A30;line-height:1.6;}
+.custom-msg-box{max-width:480px;margin:0 auto 2rem;display:none;}
+.custom-msg-inner{background:var(--cream);border:1px solid var(--border);border-radius:16px;padding:1.5rem 2rem;text-align:left;}
+.custom-msg-label{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--clay);margin-bottom:0.5rem;font-weight:500;}
+.confirm-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:1rem;}
+.btn-outline{border:1.5px solid var(--charcoal);color:var(--charcoal);padding:0.7rem 1.6rem;border-radius:999px;font-weight:500;font-size:0.9rem;transition:all 0.2s;display:inline-block;cursor:pointer;background:none;font-family:'DM Sans',sans-serif;}
+.btn-outline:hover{background:var(--charcoal);color:white;}
+.btn-primary{background:var(--clay);color:white;padding:0.7rem 1.6rem;border-radius:999px;font-weight:500;font-size:0.9rem;transition:background 0.2s;display:inline-block;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;}
+.btn-primary:hover{background:var(--clay-dark);}
+@media(max-width:768px){nav{padding:1rem 1.5rem;}.page{grid-template-columns:1fr;padding:1.5rem;}.order-summary{position:static;}.form-row{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-logo">Monkey <span>Mog</span></a>
+  <a href="cart.html" style="font-size:0.85rem;color:var(--muted);">← Back to Cart</a>
+</nav>
+
+<div class="page" id="checkout-page">
+  <div>
+    <h1>Checkout</h1>
+    <p class="subtitle">Fill in your details and we'll get your order ready.</p>
+    <div class="card">
+      <h2>Contact Information</h2>
+      <div class="form-group"><label>Full Name</label><input type="text" id="f-name" placeholder="Jane Smith"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Email</label><input type="email" id="f-email" placeholder="jane@example.com"></div>
+        <div class="form-group"><label>Phone (optional)</label><input type="tel" id="f-phone" placeholder="(555) 000-0000"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Shipping Address</h2>
+      <div class="form-group"><label>Street Address</label><input type="text" id="f-addr" placeholder="123 Main Street"></div>
+      <div class="form-group"><label>Apt / Suite (optional)</label><input type="text" id="f-addr2" placeholder="Apt 4B"></div>
+      <div class="form-row">
+        <div class="form-group"><label>City</label><input type="text" id="f-city" placeholder="Portland"></div>
+        <div class="form-group"><label>State</label><input type="text" id="f-state" placeholder="OR"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>ZIP Code</label><input type="text" id="f-zip" placeholder="97201"></div>
+        <div class="form-group"><label>Country</label>
+          <select id="f-country">
+            <option>United States</option><option>Canada</option><option>United Kingdom</option><option>Australia</option><option>Other</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Order Notes (optional)</h2>
+      <div class="form-group"><label>Special instructions or gift message</label><input type="text" id="f-notes" placeholder="e.g. Please wrap as a gift"></div>
+    </div>
+  </div>
+  <div>
+    <div class="order-summary">
+      <h2>Your Order</h2>
+      <div id="summary-items"></div>
+      <hr class="divider">
+      <div class="summary-row"><span>Subtotal</span><span id="s-subtotal">$0.00</span></div>
+      <div class="summary-row"><span>Shipping</span><span style="color:var(--muted);font-size:0.85rem;">Confirmed after order</span></div>
+      <div class="summary-row total"><span>Total</span><span id="s-total">$0.00</span></div>
+      <button class="place-btn" id="place-btn" onclick="placeOrder()">Place Order</button>
+      <p style="text-align:center;font-size:0.78rem;color:var(--muted);margin-top:1rem;">Payment instructions shown after placing order.</p>
+    </div>
+  </div>
+</div>
+
+<div class="confirmation" id="confirmation-page">
+  <div class="confirm-icon">✅</div>
+  <h1 class="confirm-title">Order Placed!</h1>
+  <p class="confirm-sub">Thank you! Please complete payment using the details below<br>and include your order number in the payment notes.</p>
+  <div class="order-number-box">
+    <div class="order-number-label">Your Order Number</div>
+    <div class="order-number" id="confirm-order-num">#----</div>
+  </div>
+  <div class="payment-box">
+    <h3>Complete Your Payment</h3>
+    <p>Send your total of <strong id="confirm-total">$0.00</strong> to any of the methods below. <strong>Include your order number in the payment notes</strong> so we can match it to your order.</p>
+    <div class="payment-methods">
+      <div class="pay-method"><div class="pay-icon">💸</div><div><div class="pay-name">Venmo</div><div class="pay-handle">@monkeymog</div></div></div>
+      <div class="pay-method"><div class="pay-icon">⚡</div><div><div class="pay-name">Zelle</div><div class="pay-handle">monkeymog@email.com</div></div></div>
+      <div class="pay-method"><div class="pay-icon">💚</div><div><div class="pay-name">CashApp</div><div class="pay-handle">$monkeymog</div></div></div>
+    </div>
+    <div class="pay-note">📝 <strong>Important:</strong> Put your order number <strong id="confirm-order-num-2">#----</strong> in the payment memo/notes. We'll confirm and ship within 1–3 business days after payment.</div>
+  </div>
+  <div class="custom-msg-box" id="custom-msg-box">
+    <div class="custom-msg-inner">
+      <div class="custom-msg-label">A note from us</div>
+      <p id="custom-msg-text" style="font-size:0.95rem;line-height:1.75;color:var(--charcoal);"></p>
+    </div>
+  </div>
+  <div class="confirm-actions">
+    <button class="btn-outline" onclick="window.print()">Print / Save</button>
+    <a href="shop.html" class="btn-primary">Continue Shopping</a>
+  </div>
+</div>
+
+<script>
+// ── ALL SHARED CODE INLINED — no external file needed ──
+
+function getCart() { return JSON.parse(localStorage.getItem('mm_cart') || '[]'); }
+function saveCart(c) { localStorage.setItem('mm_cart', JSON.stringify(c)); }
+
+function getProducts() {
+  var stored = localStorage.getItem('mm_products');
+  if (stored) return JSON.parse(stored);
+  var defaults = [
+    { id: 1, name: 'Morning Mug',     desc: 'A wide, comfortable mug perfect for your morning coffee or tea.', price: 55,  emoji: '☕', image: '', category: 'Mugs',         stock: 10 },
+    { id: 2, name: 'Bud Vase',        desc: 'A slim, elegant vase for a single stem or small bouquet.',         price: 75,  emoji: '🌸', image: '', category: 'Vases',        stock: 6  },
+    { id: 3, name: 'Serving Bowl',    desc: 'A generous hand-thrown bowl for salads, fruit, or display.',       price: 120, emoji: '🥗', image: '', category: 'Bowls',        stock: 4  },
+    { id: 4, name: 'Spice Pinch Pot', desc: 'A small open vessel, ideal for salt, spices, or trinkets.',        price: 55,  emoji: '🏺', image: '', category: 'Small Pieces', stock: 12 },
+    { id: 5, name: 'Tall Vase',       desc: 'A striking tall form that stands beautifully on its own.',         price: 150, emoji: '🌿', image: '', category: 'Vases',        stock: 3  },
+    { id: 6, name: 'Soup Crock',      desc: 'A deep, lidded crock perfect for soups and stews.',                price: 95,  emoji: '🍲', image: '', category: 'Bowls',        stock: 5  }
+  ];
+  localStorage.setItem('mm_products', JSON.stringify(defaults));
+  return defaults;
+}
+function saveProducts(p) { localStorage.setItem('mm_products', JSON.stringify(p)); }
+
+function depleteStock(cartItems) {
+  var products = getProducts();
+  cartItems.forEach(function(cartItem) {
+    var p = products.find(function(x) { return x.id === cartItem.id; });
+    if (p) p.stock = Math.max(0, p.stock - cartItem.qty);
+  });
+  saveProducts(products);
+}
+
+function generateOrderNumber() {
+  var chars = '0123456789abcdefghijklmnopqrstuvwxyz';
+  var result = '#';
+  for (var i = 0; i < 4; i++) {
+    result += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return result;
+}
+
+// ── INIT: populate cart summary ──
+var cart = getCart();
+if (!cart.length) { window.location = 'cart.html'; }
+
+var container = document.getElementById('summary-items');
+var summaryHTML = '';
+cart.forEach(function(i) {
+  var thumb = (i.image && i.image.trim() !== '')
+    ? '<img src="' + i.image + '" style="width:100%;height:100%;object-fit:cover;">'
+    : i.emoji;
+  summaryHTML += '<div class="summary-item">'
+    + '<div class="s-emoji">' + thumb + '</div>'
+    + '<div class="s-name">' + i.name + '<br><span class="s-qty">Qty: ' + i.qty + '</span></div>'
+    + '<div class="s-price">$' + (i.price * i.qty).toFixed(2) + '</div>'
+    + '</div>';
+});
+container.innerHTML = summaryHTML;
+
+var subtotalInit = cart.reduce(function(s, i) { return s + i.price * i.qty; }, 0);
+document.getElementById('s-subtotal').textContent = '$' + subtotalInit.toFixed(2);
+document.getElementById('s-total').textContent = '$' + subtotalInit.toFixed(2);
+
+// ── PLACE ORDER ──
+function placeOrder() {
+  var name    = document.getElementById('f-name').value.trim();
+  var email   = document.getElementById('f-email').value.trim();
+  var addr    = document.getElementById('f-addr').value.trim();
+  var city    = document.getElementById('f-city').value.trim();
+  var state   = document.getElementById('f-state').value.trim();
+  var zip     = document.getElementById('f-zip').value.trim();
+  var phone   = document.getElementById('f-phone').value.trim() || 'Not provided';
+  var country = document.getElementById('f-country').value;
+  var notes   = document.getElementById('f-notes').value.trim() || 'None';
+
+  if (!name || !email || !addr || !city || !state || !zip) {
+    alert('Please fill in all required fields (name, email, and full shipping address).');
+    return;
+  }
+  if (!/\S+@\S+\.\S+/.test(email)) {
+    alert('Please enter a valid email address.');
+    return;
+  }
+
+  var btn = document.getElementById('place-btn');
+  btn.disabled = true;
+  btn.textContent = 'Placing order...';
+
+  var orderNum = generateOrderNumber();
+  var subtotal = cart.reduce(function(s, i) { return s + i.price * i.qty; }, 0);
+  var itemsStr = cart.map(function(i) {
+    return i.name + ' x' + i.qty + ' = $' + (i.price * i.qty).toFixed(2);
+  }).join(', ');
+
+  depleteStock(cart);
+
+  var orders = JSON.parse(localStorage.getItem('mm_orders') || '[]');
+  orders.unshift({
+    orderNumber: orderNum,
+    date: new Date().toISOString(),
+    customer: { name: name, email: email, phone: phone, addr: addr, city: city, state: state, zip: zip, country: country, notes: notes },
+    items: cart,
+    total: subtotal
+  });
+  localStorage.setItem('mm_orders', JSON.stringify(orders));
+
+  // Send order notification to store owner
+  fetch('https://api.web3forms.com/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      access_key: '9896efd3-e7f4-4166-9da7-add594ca4d3f',
+      subject: 'New Order ' + orderNum + ' — Monkey Mog',
+      from_name: 'Monkey Mog Orders',
+      replyto: email,
+      order_number: orderNum,
+      date: new Date().toLocaleString(),
+      customer_name: name,
+      customer_email: email,
+      customer_phone: phone,
+      shipping_address: addr + ', ' + city + ', ' + state + ' ' + zip + ', ' + country,
+      order_notes: notes,
+      items: itemsStr,
+      order_total: '$' + subtotal.toFixed(2)
+    })
+  }).catch(function(e) { console.log('Owner notification error:', e); });
+
+  // Send confirmation email to customer
+  fetch('https://api.web3forms.com/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      access_key: '9896efd3-e7f4-4166-9da7-add594ca4d3f',
+      subject: 'Your Monkey Mog Order ' + orderNum + ' is Received!',
+      from_name: 'Monkey Mog',
+      to_email: email,
+      message: 'Hi ' + name + ',\n\n'
+        + 'Thank you for your order with Monkey Mog! We have received your order and it has been placed successfully.\n\n'
+        + 'ORDER DETAILS\n'
+        + 'Order Number: ' + orderNum + '\n'
+        + 'Items: ' + itemsStr + '\n'
+        + 'Total: $' + subtotal.toFixed(2) + '\n\n'
+        + 'NEXT STEPS\n'
+        + 'Your order is awaiting payment verification. Please send $' + subtotal.toFixed(2) + ' to one of the methods below with your order number ' + orderNum + ' in the notes:\n\n'
+        + '  Venmo:   @monkeymog\n'
+        + '  Zelle:   monkeymog@email.com\n'
+        + '  CashApp: $monkeymog\n\n'
+        + 'Once we confirm your payment, you will receive a second confirmation email and we will begin preparing your shipment. Orders typically ship within 1-3 business days after payment is verified.\n\n'
+        + 'Questions? Reply to this email.\n\n'
+        + 'Thank you for supporting Monkey Mog!\n'
+        + '— The Monkey Mog Team'
+    })
+  }).catch(function(e) { console.log('Customer email error:', e); });
+
+  saveCart([]);
+
+  var msg = localStorage.getItem('mm_custom_msg');
+  if (msg && msg.trim()) {
+    document.getElementById('custom-msg-text').textContent = msg;
+    document.getElementById('custom-msg-box').style.display = 'block';
+  }
+
+  document.getElementById('confirm-order-num').textContent = orderNum;
+  document.getElementById('confirm-order-num-2').textContent = orderNum;
+  document.getElementById('confirm-total').textContent = '$' + subtotal.toFixed(2);
+  document.getElementById('checkout-page').style.display = 'none';
+  document.getElementById('confirmation-page').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>
